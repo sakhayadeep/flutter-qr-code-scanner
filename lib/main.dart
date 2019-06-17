@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qrcode_reader/qrcode_reader.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
 void main() => runApp(MyApp());
 
@@ -27,6 +28,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String scanResult;
 
+  @override
+  initState(){
+    super.initState();
+    _onBarCodeScannerButtonPressed();
+  }
+
   _onQrCodeScannerButtonPressed() async {
     String qrCodeData = await QRCodeReader()
                .setAutoFocusIntervalInMs(200)
@@ -40,6 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  _onBarCodeScannerButtonPressed() async {
+    String barCodeData = await FlutterBarcodeScanner.scanBarcode("#008080","",false);
+    setState(() {
+      scanResult = barCodeData;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,14 +62,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Container(
               child: (scanResult == null)?Text("Press SCAN to get result"):Text(scanResult),
             ),
-            RaisedButton(
-              onPressed: () => _onQrCodeScannerButtonPressed(),
-              child: Text("SCAN"),
+            Row(
+              children:[
+                Expanded(child: FlatButton(color: Colors.teal,onPressed: () => _onQrCodeScannerButtonPressed(),child: Text("QR CODE SCAN"),),),
+                Expanded(child: FlatButton(color: Colors.teal,onPressed: () => _onBarCodeScannerButtonPressed(),child: Text("BARCODE SCAN"),),)
+              ]
             ),
           ],
         ),
